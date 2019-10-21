@@ -1,5 +1,6 @@
 import React from 'react';
-import './App.css';
+import {Button,Container,Row,Col, Alert} from 'react-bootstrap';
+import Jumbotron from 'react-bootstrap/Jumbotron';
 
 function calculateWinner(squares) {
   const lines = [
@@ -30,9 +31,26 @@ class Square extends React.Component {
 
   render() {
     return (
-      <button className="square" onClick={this.buttonClick}>
+      <>
+      <style type="text/css">
+      {`
+      .btn-flat {
+        background-color: purple;
+        color: white;
+        font-size: 45px;
+        padding: 0;
+        height: 140px;
+        width: 140px;
+        border: 1px solid #999;
+        font-weight: bold;
+        line-height: 34px;
+      }
+      `}
+    </style>
+      <Button variant="flat" className="square" onClick={this.buttonClick} >
         {this.props.value}
-      </button>
+      </Button>
+      </>
     );
   }
 }
@@ -114,26 +132,50 @@ class Game extends React.Component {
         'Go to move #' + move :
         'Go to game start';
       return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        <>
+        <li key={move} >
+          <Button variant="info" onClick={() => this.jumpTo(move)}>{desc}</Button>
         </li>
+        </>
       );
     });
     let status;
     if (winner) {
       status = 'Winner: ' + winner;
+      alert("Congratulations... "+ status);
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
     return (
-      <div className="game">
+      <div className="game" >
+        <Jumbotron fluid>
+          <Container>
+          <h1>Tic Tac Toe</h1>
+          <p>
+          Awesome childhood game!
+          </p>
+          </Container>
+        </Jumbotron>
+        <Container>
+  <Row>
+    <Col>
         <div className="game-board">
           <Board squares={current.squares} handleClick={(i)=>this.changeValue(i)}/>
         </div>
+    </Col>
+    <Col>
         <div className="game-info">
-          <div>{ status }</div>
+          <div>
+            <Alert variant={winner ? "success" : "primary"}>
+          <h2>{ status }</h2>
+          </Alert>
+          </div>
           <ol>{moves}</ol>
         </div>
+      </Col>
+      
+      </Row>
+      </Container>
       </div>
     );
   }
