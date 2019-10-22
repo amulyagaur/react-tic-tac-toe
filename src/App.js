@@ -1,7 +1,9 @@
 import React from 'react';
 import {Button,Container,Row,Col, Alert,OverlayTrigger,Tooltip,Spinner,Jumbotron,ProgressBar} from 'react-bootstrap';
-
-
+var s1=null;
+var s2=null;
+var s3=null;
+var flag=0;
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -16,6 +18,9 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      s1=a;
+      s2=b;
+      s3=c;
       return squares[a];
     }
   }
@@ -65,12 +70,63 @@ class Square extends React.Component {
   }
 }
 
+class WinSquare extends React.Component {
+
+  buttonClick = ()=>{
+    this.props.func();
+  }
+
+  render() {
+    return (
+      <>
+      <style type="text/css">
+      {`
+      .btn-flatwin {
+        background-color: green;
+        color: white;
+        font-size: 45px;
+        padding: 0;
+        height: 120px;
+        width: 120px;
+        border: 1px solid #999;
+        font-weight: bold;
+        line-height: 34px;
+      }
+      `}
+    </style>
+    <OverlayTrigger
+      key="top"
+      placement="top"
+      overlay={
+        <Tooltip id={`tooltip-top`}>
+          Tap to make a move...
+        </Tooltip>
+      }
+    >
+      <Button variant="flatwin" className="square" onClick={this.buttonClick} >
+        {this.props.value}
+      </Button>
+      </OverlayTrigger>
+      </>
+    );
+  }
+}
+
 class Board extends React.Component {
 
   renderSquare(i) {
+    if(i===s1 || i===s2 || i===s3)
+    {
+      return(
+        <WinSquare value={this.props.squares[i]} func={ ()=>this.props.handleClick(i) }/>
+      );
+    }
+    else
+    {
     return(
      <Square value={this.props.squares[i]} func={ ()=>this.props.handleClick(i) }/>
     );
+    }
   }
 
   render() {
@@ -190,7 +246,7 @@ class Game extends React.Component {
       return (
         <>
         <li key={move} >
-          <Button variant="info" onClick={() => this.jumpTo(move)}>{desc}</Button>
+          <Button variant="info" onClick={() => this.jumpTo(move)} >{desc}</Button>
         </li>
         </>
       );
@@ -198,6 +254,11 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = 'Winner: ' + winner;
+      flag=1;
+      console.log(flag);
+      console.log(s1);
+      console.log(s2);
+      console.log(s3);
       alert("🎉🎉🎉🎉 Congratulations... "+ status + " 🎉🎉🎉🎉");
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
@@ -223,7 +284,7 @@ class Game extends React.Component {
   <Row>
     <Col>
         <div className="game-board" >
-          <Board squares={current.squares} handleClick={(i)=>this.changeValue(i)}/>
+          <Board squares={current.squares} handleClick={(i)=>this.changeValue(i)} isOver={flag}/>
         </div>
     </Col>
     <Col>
